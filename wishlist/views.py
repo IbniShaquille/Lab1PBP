@@ -2,6 +2,7 @@ from django.shortcuts import render
 from wishlist.models import BarangWishlist
 from django.http import HttpResponse
 from django.core import serializers
+<<<<<<< HEAD
 from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -15,12 +16,20 @@ from django.urls import reverse
 
 # Create your views here.
 @login_required(login_url='/wishlist/login/')
+=======
+
+# Create your views here.
+>>>>>>> 542a6f6d122f88ae784d4583b2e25ad176270d7a
 def show_wishlist(request):
     data_barang_wishlist = BarangWishlist.objects.all()
     context = {
         'list_barang': data_barang_wishlist,
+<<<<<<< HEAD
         'nama': 'Ibni Shaquille Syauqi Ibrahim',
         'last_login': request.COOKIES['last_login'],
+=======
+        'nama': 'Ibni Shaquille Syauqi Ibrahim'
+>>>>>>> 542a6f6d122f88ae784d4583b2e25ad176270d7a
     }
     return render(request, "wishlist.html", context)
 
@@ -38,6 +47,7 @@ def show_xml_by_id(request, id):
 
 def show_json_by_id(request, id):
     data = BarangWishlist.objects.filter(pk=id)
+<<<<<<< HEAD
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def register(request):
@@ -73,3 +83,6 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('wishlist:login'))
     response.delete_cookie('last_login')
     return redirect('wishlist:login')
+=======
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+>>>>>>> 542a6f6d122f88ae784d4583b2e25ad176270d7a
