@@ -6,6 +6,7 @@
 		<a class="navbar-brand" href="#">{{nama}}</a>
 		<div class="collapse navbar-collapse d-flex justify-content-end" id="navbarSupportedContent">
 		  	<button class="btn btn-outline-success " type="submit"><a href="{% url 'wishlist:logout' %}">Logout</a></button>
+			<button class="btn btn-outline-success " type="submit" id="addTaskBtn">add task</button>
 	  	</div>
 	</div>
 </nav>
@@ -15,10 +16,30 @@
 </table>
 <p class="d-flex justify-content-center">Sesi terakhir login: {{ last_login }}</p>
 
+<div id="divForm" >
+	<form action="" method="POST">
+		{% csrf_token %}
+		<div class="form-group">
+			<label for="task">nama barang</label>
+			<input type="text" class="form-control" id="nama_barang" name="nama_barang" placeholder="Nama Barang">
+		</div>
+		<div class="form-group">
+			<label for="priority">Harga Barang</label>
+			<input type="text" class="form-control" id="harga_barang" name="nama_barang" placeholder="Harga Barang">
+		</div>
+		<div class="form-group">
+			<label for="due_date">Deskripsi</label>
+			<input type="text" class="form-control" id="deskripsi" name="deskripsi" placeholder="Deskripsi Barang">
+		</div>
+		<button type="submit" class="btn btn-light" id="submitBtn">Submit</button>
+	</form>
+</div>
+
+
 <script>
 	$.get( "{% url 'wishlist:show_json' %}", function( data ) {
 		document.getElementsByClassName("table")[0].innerHTML = ""
-		var StringHTML = `
+		var table = `
 		<tr>
 			<th>#</th>
     		<th scope="col">Nama Barang</th>
@@ -27,7 +48,7 @@
     	</tr>
 		`;
 		for (var i = 0; i < data.length; i++) {
-			StringHTML += `
+			table += `
 			<tr>
 				<td scope="row">${i+1}</td>
 				<td>${data[i].fields.nama_barang}</td>
@@ -36,9 +57,59 @@
 			</tr>
 			`;
 		}
-		console.log(data)
-		document.getElementsByClassName("table")[0].innerHTML = StringHTML;
+		document.getElementsByClassName("table")[0].innerHTML = table;
 	});
+</script>
+
+<script>
+	$(document).ready(function(){	
+		$("#divForm").hide();
+		$("#addTaskBtn").click(function(){
+			$("#divForm").toggle();
+		});
+	});
+</script>
+
+<script>
+	$(document).ready(function(){
+		$('#submitBtn').click(function(){
+			var namaBarang = $('#nama_barang').val();
+			var hargaBarang = $('#harga_barang').val();
+			var deskripsi = $('#deskripsi').val();
+			var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("{% url 'wishlist:add_barang' %}", {
+				nama_barang: namaBarang,
+                harga_barang: hargaBarang,
+                deskripsi: deskripsi,
+                csrfmiddlewaretoken: CSRFtoken,
+			}, function(){
+				$('.table').empty();
+				$.get( "{% url 'wishlist:show_json' %}", function( data ) {
+					document.getElementsByClassName("table")[0].innerHTML = ""
+					var table = `
+					<tr>
+						<th>#</th>
+						<th scope="col">Nama Barang</th>
+						<th scope="col">Harga Barang</th>
+						<th scope="col">Deskripsi</th>
+					</tr>
+					`;
+					for (var i = 0; i < data.length; i++) {
+						table += `
+						<tr>
+							<td scope="row">${i+1}</td>
+							<td>${data[i].fields.nama_barang}</td>
+							<td>${data[i].fields.harga_barang}</td>
+							<td>${data[i].fields.deskripsi}</td>
+						</tr>
+						`;
+						
+					}
+					document.getElementsByClassName("table")[0].innerHTML = table;
+				});
+			});
+		})
+	})
 </script>
 
 {% endblock content %}
